@@ -9,7 +9,6 @@
 [averaged_lanes]: ./test_images_output/solidYellowLeft_new.jpg
 [shortcoming]: ./gifs/challenge.gif 
 
----
 
 Overview
 ---
@@ -20,10 +19,12 @@ In this project we will detect lane lines in images using Python and OpenCV.  Op
 
 ![Lane Detection][lane_detection]
 
-### Reflection
+Reflection
+---
 
-Pipeline consisted of 7 following steps:
-1) Convert image to grayscale
+Pipeline consisted of **_7_** following steps:
+
+1) Convert image to gray-scale
 2) Apply Gaussian Blur to smoothen edges
 3) Apply canny to obtain edges on smoothed gray image with the chosen high and low thresholds
 4) Set vertices of the region of interest
@@ -33,34 +34,38 @@ Pipeline consisted of 7 following steps:
 
 ![alt text][broken_lanes]
 
-In order to draw a single line on the left and right lanes, I created the draw_lane_lines() function the following way:
+There are multiple lines detected for a lane line. We should come up with an averaged line for that. In order to draw a single line on the left and right lanes, I created the draw_lane_lines() function the following way:
 
-* All obtained hough lines being separated into two heaps denoting left and right lanes according to their slope ('m' in y = mx + b equation). As vertical axis increases from top to down, negative slopes go to the left heap, positive - to the right.
+* All obtained hough lines being separated into two heaps denoting left and right lanes according to their slope ('m' in y = mx + b equation). The left lane should have a positive slope, and the right lane should have a negative slope. Therefore, we'll collect positive slope lines and negative slope lines separately.
 * Average slopes and intercepts (m's and b's in y=mx+b) within each heap. It yields data for 2 linear functions at maximum (one for left and one right lane)
-* compute coordinates of intersection with the button and the upper edges of the region of interest according to obtained functions.
-* Draw those averaged lines accross the full extent of the region of interest
+* Draw those averaged lines across the full extent of the region of interest
+
+**_Note_**: In the image, y coordinate is reversed. The higher y value is actually lower in the image. Therefore, the slope is negative for the left lane, and the slope is positive for the right lane.
 
 ![alt text][averaged_lanes]
 
-###2. Potential shortcomings
+Potential shortcomings
+---
 
 Potential shortcomings are mostly related to detection of false positives and possible lack of true positives.
 
 
 ![alt text][shortcoming]
 
-Here we can see that canny function fails to detect the left lane while it is definitely present within the original image.
+* Here we can see that canny function fails to detect the left lane while it is definitely present within the original image.
 
-Another possible shortcoming is that averaged slopes and intercepts implicitly contain values of all lines participating in averaging and it can possibly lead to not exactly following the lanes markings.
+* Another possible shortcoming is that averaged slopes and intercepts implicitly contain values of all lines participating in averaging and it can possibly lead to not exactly following the lanes markings.
 
-###3. Possible improvements
+Possible improvements
+---
 
 An improvement for better performance with false positives / true positives would probably be to better tune the hyperparameters: kernel, thresholds, minimum line length, maximum line gap etc. But there is a danger to 'overfit' for some particular image class which would ultimately affect the overall performance.
 In my opinion, there is always a tradeoff, and, after all, it is probably better not to detect the existing lane line at all rather then falsely detect the non-existing one.
 
 To address the average lines not exactly following the actual lanes probably requires some more sophisticated averaging techniques, maybe involving operations across the neighbouring frames.
 
-###4. Optional Challenge
+Optional Challenge
+---
 
 To improve detection I've implemented two techniques:
 
